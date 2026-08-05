@@ -3,250 +3,126 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="TaskSpace - Professional Task Management Application">
-    <meta name="theme-color" content="#4f46e5">
-    <title>TaskSpace Pro | Task Management</title>
-    
-    <!-- Preconnect for performance -->
-    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="icon" href="data:,">
-    <!-- Styles -->
+    <title>TaskSpace Pro | Workspace</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div id="app" class="app-container">
-        <!-- Loading Screen -->
-        <div id="loading-screen" class="loading-screen">
-            <div class="loader">
-                <div class="loader-spinner"></div>
-                <p>Loading TaskSpace...</p>
-            </div>
-        </div>
-
-        <!-- Toast Notification -->
-        <div id="toast-container" class="toast-container"></div>
-
-        <!-- Auth Section -->
-        <div id="auth-box" class="auth-card" role="main" aria-label="Authentication">
+    <div class="app-container">
+        <!-- Auth View -->
+        <div id="auth-box" class="auth-card">
             <div class="auth-header">
-                <i class="fa-solid fa-list-check logo-icon" aria-hidden="true"></i>
+                <i class="fa-solid fa-bolt-lightning logo-icon"></i>
                 <h2 id="auth-title">Welcome Back</h2>
-                <p class="auth-subtitle">Manage your tasks efficiently</p>
+                <p>Sign in to your intelligent workspace</p>
             </div>
-            
-            <form id="auth-form" class="auth-form" novalidate>
-                <div class="form-group">
-                    <div class="input-wrapper" id="username-wrapper" style="display:none;">
-                        <i class="fa-regular fa-user input-icon" aria-hidden="true"></i>
-                        <input type="text" id="username" placeholder="Full Name" autocomplete="name">
-                    </div>
-                    
-                    <div class="input-wrapper">
-                        <i class="fa-regular fa-envelope input-icon" aria-hidden="true"></i>
-                        <input type="email" id="email" placeholder="Email Address" required autocomplete="email">
-                    </div>
-                    
-                    <div class="input-wrapper">
-                        <i class="fa-regular fa-lock input-icon" aria-hidden="true"></i>
-                        <input type="password" id="password" placeholder="Password" required autocomplete="current-password" minlength="6">
-                        <button type="button" class="toggle-password" aria-label="Toggle password visibility">
-                            <i class="fa-regular fa-eye"></i>
-                        </button>
-                    </div>
-                    
-                    <button type="submit" id="auth-btn" class="btn btn-primary btn-full">
-                        <span id="auth-btn-text">Sign In</span>
-                        <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
-                    </button>
-                </div>
-            </form>
-            
-            <p class="toggle-link" id="toggle-link" role="button" tabindex="0">
-                Don't have an account? <span class="highlight">Register</span>
-            </p>
-            
-            <div class="auth-divider">
-                <span>or continue with</span>
+            <div class="form-group">
+                <input type="text" id="username" placeholder="Full Name" style="display:none;">
+                <input type="email" id="email" placeholder="Email Address">
+                <input type="password" id="password" placeholder="Password">
+                <button id="auth-btn" class="btn btn-primary btn-block" onclick="handleAuth()">Sign In</button>
             </div>
-            
-            <div class="social-auth">
-                <button class="btn btn-social" aria-label="Sign in with Google">
-                    <i class="fa-brands fa-google"></i>
-                </button>
-                <button class="btn btn-social" aria-label="Sign in with GitHub">
-                    <i class="fa-brands fa-github"></i>
-                </button>
-            </div>
+            <p onclick="toggleAuthMode()" id="toggle-link">Don't have an account? Register</p>
         </div>
 
-        <!-- Dashboard Section -->
-        <div id="dashboard" class="dashboard" style="display:none;" role="main">
-            <!-- Top Navigation -->
-            <header class="navbar" role="banner">
+        <!-- Dashboard View -->
+        <div id="dashboard" class="dashboard" style="display:none;">
+            <!-- Top Navbar -->
+            <header class="navbar">
                 <div class="brand">
-                    <i class="fa-solid fa-layer-group" aria-hidden="true"></i>
-                    <span>TaskSpace</span>
-                    <span class="brand-badge">Pro</span>
+                    <i class="fa-solid fa-bolt-lightning"></i>
+                    <span>TaskSpace <small class="badge-pro">AI</small></span>
                 </div>
-                
-                <div class="nav-actions">
-                    <button class="btn-icon theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">
-                        <i class="fa-regular fa-moon"></i>
+                <div class="user-profile">
+                    <button class="btn btn-ai-toggle" onclick="toggleAIPanel()">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i> AI Assistant
                     </button>
-                    
-                    <div class="user-profile">
-                        <span class="user-greeting">
-                            <i class="fa-regular fa-circle-user" aria-hidden="true"></i>
-                            <span id="user-display"></span>
-                        </span>
-                        <button class="btn btn-logout" onclick="logout()">
-                            <i class="fa-solid fa-arrow-right-from-bracket" aria-hidden="true"></i>
-                            Logout
-                        </button>
-                    </div>
+                    <span class="user-greeting"><i class="fa-regular fa-circle-user"></i> <span id="user-display"></span></span>
+                    <button class="btn btn-logout" onclick="logout()"><i class="fa-solid fa-arrow-right-from-bracket"></i></button>
                 </div>
             </header>
 
-            <!-- Quick Metrics Overview -->
-            <section class="stats-container" aria-label="Task statistics">
+            <!-- Metrics Overview -->
+            <section class="stats-container">
                 <div class="stat-card">
-                    <div class="stat-icon bg-blue">
-                        <i class="fa-solid fa-list" aria-hidden="true"></i>
-                    </div>
+                    <div class="stat-icon bg-indigo"><i class="fa-solid fa-list-check"></i></div>
                     <div class="stat-info">
                         <p>Total Tasks</p>
                         <h3 id="stat-total">0</h3>
                     </div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-icon bg-yellow">
-                        <i class="fa-solid fa-spinner" aria-hidden="true"></i>
-                    </div>
+                    <div class="stat-icon bg-amber"><i class="fa-solid fa-clock"></i></div>
                     <div class="stat-info">
-                        <p>Pending</p>
+                        <p>In Progress</p>
                         <h3 id="stat-pending">0</h3>
                     </div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-icon bg-green">
-                        <i class="fa-solid fa-circle-check" aria-hidden="true"></i>
-                    </div>
+                    <div class="stat-icon bg-emerald"><i class="fa-solid fa-circle-check"></i></div>
                     <div class="stat-info">
                         <p>Completed</p>
                         <h3 id="stat-completed">0</h3>
                     </div>
                 </div>
-                <div class="stat-card stat-progress">
-                    <div class="stat-icon bg-purple">
-                        <i class="fa-solid fa-chart-simple" aria-hidden="true"></i>
-                    </div>
-                    <div class="stat-info">
-                        <p>Progress</p>
-                        <div class="progress-bar-container">
-                            <div class="progress-bar" id="progress-bar" style="width: 0%"></div>
-                        </div>
-                        <span class="progress-text" id="progress-text">0%</span>
-                    </div>
-                </div>
             </section>
 
-            <!-- Toolbar -->
-            <section class="toolbar" aria-label="Task controls">
+            <!-- Controls Toolbar (Single Primary Action) -->
+            <section class="toolbar">
                 <div class="search-box">
-                    <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
-                    <input type="text" id="search-input" placeholder="Search tasks..." oninput="debouncedFilter()">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" id="search-input" placeholder="Search tasks by title or detail..." oninput="filterTasks()">
                 </div>
-                <div class="filter-box">
+                <div class="filter-group">
                     <select id="filter-status" onchange="filterTasks()">
                         <option value="all">All Statuses</option>
                         <option value="pending">Pending</option>
-                        <option value="in-progress">In Progress</option>
                         <option value="completed">Completed</option>
                     </select>
-                    <select id="filter-priority" onchange="filterTasks()">
-                        <option value="all">All Priorities</option>
-                        <option value="low">Low</option>
-                        <option value="medium">Medium</option>
-                        <option value="high">High</option>
-                    </select>
+                    <button class="btn btn-primary" onclick="openModal()">
+                        <i class="fa-solid fa-plus"></i> New Task
+                    </button>
                 </div>
-                <button class="btn btn-primary" onclick="openModal()">
-                    <i class="fa-solid fa-plus" aria-hidden="true"></i>
-                    New Task
-                </button>
             </section>
 
-            <!-- Task List -->
-            <section id="task-section" aria-label="Task list">
+            <!-- Task List Display -->
+            <main>
                 <div id="task-list" class="task-grid"></div>
-            </section>
+            </main>
         </div>
     </div>
 
-    <!-- Create/Edit Task Modal -->
-    <div id="task-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <!-- Slide-out AI Assistant Panel -->
+    <aside id="ai-drawer" class="ai-drawer">
+        <div class="ai-drawer-header">
+            <h3><i class="fa-solid fa-wand-magic-sparkles"></i> AI Task Generator</h3>
+            <span class="close-btn" onclick="toggleAIPanel()">&times;</span>
+        </div>
+        <div class="ai-drawer-body">
+            <p class="ai-hint">Describe a goal or project, and the AI assistant will break it down into actionable tasks for you.</p>
+            <textarea id="ai-prompt" placeholder="e.g., Plan a 3-step video production workflow or prepare for database architecture exam..."></textarea>
+            <button class="btn btn-ai-action" onclick="generateAITasks()">
+                <i class="fa-solid fa-brain"></i> Generate Tasks
+            </button>
+            <div id="ai-suggestions" class="ai-suggestions-list"></div>
+        </div>
+    </aside>
+
+    <!-- Create Task Modal -->
+    <div id="task-modal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 id="modal-title">Create New Task</h3>
-                <button class="close-btn" onclick="closeModal()" aria-label="Close modal">&times;</button>
+                <h3>Create New Task</h3>
+                <span class="close-btn" onclick="closeModal()">&times;</span>
             </div>
             <div class="modal-body">
-                <form id="task-form" novalidate>
-                    <div class="input-wrapper">
-                        <i class="fa-regular fa-pen-to-square input-icon" aria-hidden="true"></i>
-                        <input type="text" id="task-title" placeholder="Task Title (e.g. Design Landing Page)" required>
-                    </div>
-                    
-                    <div class="input-wrapper textarea-wrapper">
-                        <i class="fa-regular fa-align-left input-icon" aria-hidden="true"></i>
-                        <textarea id="task-desc" placeholder="Task details and sub-notes..."></textarea>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="input-wrapper">
-                            <i class="fa-regular fa-flag input-icon" aria-hidden="true"></i>
-                            <select id="task-priority">
-                                <option value="low">Low Priority</option>
-                                <option value="medium" selected>Medium Priority</option>
-                                <option value="high">High Priority</option>
-                            </select>
-                        </div>
-                        
-                        <div class="input-wrapper">
-                            <i class="fa-regular fa-calendar input-icon" aria-hidden="true"></i>
-                            <input type="date" id="task-date">
-                        </div>
-                    </div>
-                    
-                    <div class="modal-actions">
-                        <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
-                        <button type="submit" class="btn btn-primary" id="task-submit-btn">
-                            <i class="fa-solid fa-plus" aria-hidden="true"></i>
-                            Create Task
-                        </button>
-                    </div>
-                </form>
+                <input type="text" id="task-title" placeholder="Task Title (e.g. Set up IoT Gateway Architecture)">
+                <textarea id="task-desc" placeholder="Details or sub-notes..."></textarea>
+                <button class="btn btn-primary btn-block" onclick="createTask()">Save Task</button>
             </div>
         </div>
     </div>
 
-    <!-- Empty State Template -->
-    <template id="empty-state">
-        <div class="empty-state">
-            <i class="fa-regular fa-clipboard" aria-hidden="true"></i>
-            <h3>No tasks found</h3>
-            <p>Create your first task to get started</p>
-            <button class="btn btn-primary" onclick="openModal()">
-                <i class="fa-solid fa-plus" aria-hidden="true"></i>
-                Create Task
-            </button>
-        </div>
-    </template>
-
-    <!-- Main JavaScript -->
-    <script type="module" src="app.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>

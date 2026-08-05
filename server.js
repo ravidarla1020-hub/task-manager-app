@@ -1,9 +1,7 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-const dotenv = require('dotenv');
 const { GoogleGenAI } = require('@google/genai');
-
-dotenv.config();
 
 const app = express();
 app.use(cors());
@@ -17,8 +15,13 @@ const authRoutes = require('./routes/authRoutes');
 app.use('/api/tasks', taskRoutes);
 app.use('/api/auth', authRoutes);
 
-// Initialize Official Gemini SDK
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+// Safe AI Client Initialization
+let ai = null;
+if (process.env.GEMINI_API_KEY) {
+    ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+} else {
+    console.warn('WARNING: GEMINI_API_KEY is missing from environment variables.');
+}
 
 // AI Task Generation Endpoint
 app.post('/api/ai/generate-tasks', async (req, res) => {
@@ -28,12 +31,12 @@ app.post('/api/ai/generate-tasks', async (req, res) => {
             return res.status(400).json({ error: 'Prompt is required' });
         }
 
-        if (!process.env.GEMINI_API_KEY) {
-            return res.status(500).json({ error: 'GEMINI_API_KEY environment variable is not set.' });
+        if (!ai) {
+            return res.status(500).json({ error: 'GEMINI_API_KEY environment variable is not configured on the server.' });
         }
 
         const response = await ai.models.generateContent({
-            model: 'gemini-2.0-flash', // Updated to supported model string
+            model: 'gemini-2.0-flash',
             contents: `Break down the following goal or topic into 3 to 5 concise, actionable task items: "${prompt}".`,
             config: {
                 responseMimeType: 'application/json',
@@ -58,3 +61,6 @@ app.post('/api/ai/generate-tasks', async (req, res) => {
         res.status(500).json({ error: error.message || 'Failed to generate tasks using AI' });
     }
 });
+
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

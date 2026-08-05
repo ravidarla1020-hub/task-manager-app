@@ -33,7 +33,7 @@ app.post('/api/ai/generate-tasks', async (req, res) => {
         }
 
         const response = await ai.models.generateContent({
-            model: 'gemini-2.5-flash',
+            model: 'gemini-2.0-flash', // Updated to supported model string
             contents: `Break down the following goal or topic into 3 to 5 concise, actionable task items: "${prompt}".`,
             config: {
                 responseMimeType: 'application/json',
@@ -58,6 +58,3 @@ app.post('/api/ai/generate-tasks', async (req, res) => {
         res.status(500).json({ error: error.message || 'Failed to generate tasks using AI' });
     }
 });
-
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

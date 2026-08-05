@@ -209,3 +209,43 @@ function closeModal() { document.getElementById('task-modal').style.display = 'n
 function logout() { localStorage.clear(); location.reload(); }
 
 if (localStorage.getItem('token')) initDashboard();
+async function generateAITasks() {
+    const prompt = document.getElementById('ai-prompt').value.trim();
+    const container = document.getElementById('ai-suggestions');
+    
+    if (!prompt) return alert('Please enter a topic or goal for the AI.');
+
+    container.innerHTML = '<p style="color: var(--text-muted); text-align: center;"><i class="fa-solid fa-spinner fa-spin"></i> Generating tasks using Gemini AI...</p>';
+
+    try {
+        const res = await fetch('/api/ai/generate-tasks', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ prompt })
+        });
+
+        const data = await res.json();
+        container.innerHTML = '';
+
+        if (res.ok && data.tasks) {
+            data.tasks.forEach((t) => {
+                const card = document.createElement('div');
+                card.className = 'ai-suggestion-card';
+                card.innerHTML = `
+                    <div>
+                        <h5>${t.title}</h5>
+                        <p>${t.description || ''}</p>
+                    </div>
+                    <button class="btn btn-primary" style="padding: 6px 10px; font-size: 0.8rem;" onclick="addAITask('${t.title.replace(/'/g, "\\'")}', '${(t.description || '').replace(/'/g, "\\'")}', this)">
+                        <i class="fa-solid fa-plus"></i> Add
+                    </button>
+                `;
+                container.appendChild(card);
+            });
+        } else {
+            container.innerHTML = `<p style="color: #ef4444;">${data.error || 'Failed to generate tasks.'}</p>`;
+        }
+    } catch (err) {
+        container.innerHTML = '<p style="color: #ef4444;">Error connecting to AI service.</p>';
+    }
+}

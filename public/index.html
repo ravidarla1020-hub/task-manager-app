@@ -3,170 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TaskSpace Pro — Modern Workspace</title>
-    <!-- Inter Font & Lucide Icons -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <title>Task Manager</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-
-    <!-- App Container -->
-    <div class="app-layout">
-        
-        <!-- Sidebar Navigation -->
-        <aside class="sidebar">
-            <div class="brand">
-                <div class="brand-icon"><i data-lucide="sparkles"></i></div>
-                <span class="brand-name">TaskSpace <span class="badge">PRO</span></span>
-            </div>
-
-            <nav class="nav-menu">
-                <button class="nav-item active" data-filter="all">
-                    <i data-lucide="layout-grid"></i>
-                    <span>All Tasks</span>
-                    <span class="count-badge" id="count-all">0</span>
-                </button>
-                <button class="nav-item" data-filter="pending">
-                    <i data-lucide="clock"></i>
-                    <span>In Progress</span>
-                    <span class="count-badge" id="count-pending">0</span>
-                </button>
-                <button class="nav-item" data-filter="completed">
-                    <i data-lucide="check-circle-2"></i>
-                    <span>Completed</span>
-                    <span class="count-badge" id="count-completed">0</span>
-                </button>
-            </nav>
-
-            <div class="sidebar-footer">
-                <button id="toggle-ai-btn" class="ai-trigger-btn">
-                    <i data-lucide="bot"></i>
-                    <span>AI Workspace Assistant</span>
-                </button>
-            </div>
-        </aside>
-
-        <!-- Main Workspace -->
-        <main class="main-content">
-            <!-- Header Bar -->
-            <header class="top-header">
-                <div class="search-bar">
-                    <i data-lucide="search"></i>
-                    <input type="text" id="search-input" placeholder="Search tasks by title or tags...">
+    <div class="app-container">
+        <!-- Auth Section -->
+        <div id="auth-container" class="card">
+            <h2 id="auth-title">Login</h2>
+            <form id="auth-form">
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" required placeholder="Enter your email">
                 </div>
-
-                <div class="header-actions">
-                    <select id="priority-filter" class="styled-select">
-                        <option value="all">All Priorities</option>
-                        <option value="high">High Priority</option>
-                        <option value="medium">Medium Priority</option>
-                        <option value="low">Low Priority</option>
-                    </select>
-                    <button class="btn btn-primary" id="open-add-modal">
-                        <i data-lucide="plus"></i>
-                        <span>New Task</span>
-                    </button>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" required placeholder="Enter your password">
                 </div>
-            </header>
-
-            <!-- Dashboard Overview Stats -->
-            <section class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-icon blue"><i data-lucide="list-todo"></i></div>
-                    <div class="stat-info">
-                        <span class="stat-label">Total Tasks</span>
-                        <h3 class="stat-value" id="stat-total">0</h3>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon amber"><i data-lucide="loader-2"></i></div>
-                    <div class="stat-info">
-                        <span class="stat-label">In Progress</span>
-                        <h3 class="stat-value" id="stat-pending">0</h3>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon green"><i data-lucide="check-circle"></i></div>
-                    <div class="stat-info">
-                        <span class="stat-label">Completed</span>
-                        <h3 class="stat-value" id="stat-completed">0</h3>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Task List Container -->
-            <section class="task-section">
-                <div class="section-header">
-                    <h2 id="current-view-title">All Tasks</h2>
-                </div>
-                <div id="tasks-container" class="task-grid">
-                    <!-- Tasks render here -->
-                </div>
-            </section>
-        </main>
-
-        <!-- AI Assistant Side Panel -->
-        <div id="ai-panel" class="ai-drawer">
-            <div class="ai-header">
-                <div class="ai-title">
-                    <i data-lucide="sparkles" class="sparkle-icon"></i>
-                    <h3>AI Task Generator</h3>
-                </div>
-                <button id="close-ai-btn" class="icon-btn"><i data-lucide="x"></i></button>
-            </div>
-            <div class="ai-body">
-                <p class="ai-desc">Describe your goal, project, or schedule, and Gemini AI will automatically break it down into actionable tasks for you.</p>
-                <textarea id="ai-prompt-input" rows="4" placeholder="e.g., Plan a 3-day product launch event with marketing strategy and dev tasks..."></textarea>
-                <button id="generate-tasks-btn" class="btn btn-ai">
-                    <i data-lucide="wand-2"></i>
-                    <span>Generate Tasks</span>
-                </button>
-                <div id="ai-status" class="ai-status-msg"></div>
-            </div>
+                <button type="submit" id="auth-submit-btn" class="btn btn-primary">Login</button>
+            </form>
+            <p class="toggle-auth">
+                <span id="auth-toggle-text">Don't have an account?</span>
+                <button id="toggle-auth-btn" class="btn-link">Register</button>
+            </p>
         </div>
 
-    </div>
+        <!-- Dashboard Section -->
+        <div id="dashboard-container" class="card hidden">
+            <header class="dashboard-header">
+                <h2>My Tasks</h2>
+                <button id="logout-btn" class="btn btn-secondary">Logout</button>
+            </header>
 
-    <!-- Add Task Modal -->
-    <div id="task-modal" class="modal-overlay">
-        <div class="modal-card">
-            <div class="modal-header">
-                <h3>Create New Task</h3>
-                <button id="close-modal-btn" class="icon-btn"><i data-lucide="x"></i></button>
-            </div>
-            <form id="add-task-form" class="modal-body">
-                <div class="form-group">
-                    <label for="task-title">Task Title</label>
-                    <input type="text" id="task-title" required placeholder="e.g. Design Landing Page Wireframes">
-                </div>
-                <div class="form-group">
-                    <label for="task-desc">Description</label>
-                    <textarea id="task-desc" rows="3" placeholder="Add specific details or context..."></textarea>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="task-priority">Priority</label>
-                        <select id="task-priority" class="styled-select">
-                            <option value="medium">Medium</option>
-                            <option value="high">High</option>
-                            <option value="low">Low</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="modal-actions">
-                    <button type="button" id="cancel-modal-btn" class="btn btn-secondary">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Create Task</button>
-                </div>
+            <!-- Task Creation Form -->
+            <form id="task-form" class="task-form">
+                <input type="text" id="task-title" placeholder="Task Title" required>
+                <input type="text" id="task-desc" placeholder="Task Description (optional)">
+                <button type="submit" class="btn btn-primary">Add Task</button>
             </form>
+
+            <!-- Task List -->
+            <ul id="task-list" class="task-list"></ul>
         </div>
     </div>
 
     <script src="app.js"></script>
-    <script>
-        lucide.createIcons();
-    </script>
 </body>
 </html>

@@ -2,10 +2,13 @@ import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import { GoogleGenAI } from '@google/genai';
+import { createRequire } from 'module';
 
-// Routes
-import taskRoutes from './routes/taskRoutes.js';
-import authRoutes from './routes/authRoutes.js';
+const require = createRequire(import.meta.url);
+
+// Import CommonJS routes cleanly
+const taskRoutes = require('./routes/taskRoutes');
+const authRoutes = require('./routes/authRoutes');
 
 const app = express();
 app.use(cors());

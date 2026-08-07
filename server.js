@@ -15,12 +15,47 @@ const authRoutes = require('./routes/authRoutes');
 app.use('/api/tasks', taskRoutes);
 app.use('/api/auth', authRoutes);
 
-// Safe AI Client Initialization
+// Initialize Gemini Client
 let ai = null;
 if (process.env.GEMINI_API_KEY) {
     ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 } else {
     console.warn('WARNING: GEMINI_API_KEY is missing from environment variables.');
+}
+
+// Helper to attempt model generation with fallback
+async function generateWithFallback(prompt) {
+    const modelsToTry = ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-1.5-flash'];
+    let lastError = null;
+
+    for (const modelName of modelsToTry) {
+        try {
+            console.log(`Attempting generation with model: ${modelName}`);
+            const response = await ai.models.generateContent({
+                model: modelName,
+                contents: `Break down the following goal or topic into 3 to 5 concise, actionable task items: "${prompt}".`,
+                config: {
+                    responseMimeType: 'application/json',
+                    responseSchema: {
+                        type: 'ARRAY',
+                        items: {
+                            type: 'OBJECT',
+                            properties: {
+                                title: { type: 'STRING' },
+                                description: { type: 'STRING' }
+                            },
+                            required: ['title', 'description']
+                        }
+                    }
+                }
+            });
+            return response.text;
+        } catch (err) {
+            console.warn(`Model ${modelName} failed:`, err.message);
+            lastError = err;
+        }
+    }
+    throw lastError;
 }
 
 // AI Task Generation Endpoint
@@ -32,33 +67,17 @@ app.post('/api/ai/generate-tasks', async (req, res) => {
         }
 
         if (!ai) {
-            return res.status(500).json({ error: 'GEMINI_API_KEY environment variable is not configured on the server.' });
+            return res.status(500).json({ error: 'GEMINI_API_KEY environment variable is not configured.' });
         }
 
-        const response = await ai.models.generateContent({
-            model: 'gemini-2.0-flash', // Updated model string
-            contents: `Break down the following goal or topic into 3 to 5 concise, actionable task items: "${prompt}".`,
-            config: {
-                responseMimeType: 'application/json',
-                responseSchema: {
-                    type: 'ARRAY',
-                    items: {
-                        type: 'OBJECT',
-                        properties: {
-                            title: { type: 'STRING' },
-                            description: { type: 'STRING' }
-                        },
-                        required: ['title', 'description']
-                    }
-                }
-            }
-        });
-
-        const tasks = JSON.parse(response.text);
+        const rawJsonText = await generateWithFallback(prompt);
+        const tasks = JSON.parse(rawJsonText);
         res.json({ tasks });
     } catch (error) {
         console.error('AI Generation Error:', error);
-        res.status(500).json({ error: error.message || 'Failed to generate tasks using AI' });
+        res.status(500).json({ 
+            error: error.message || 'Quota exceeded or no available Gemini model found for this key.' 
+        });
     }
 });
 

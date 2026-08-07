@@ -23,9 +23,9 @@ if (process.env.GEMINI_API_KEY) {
     console.warn('WARNING: GEMINI_API_KEY is missing from environment variables.');
 }
 
-// Helper to attempt model generation with fallback
+// Helper function with fallback model strategy
 async function generateWithFallback(prompt) {
-    const modelsToTry = ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-1.5-flash'];
+    const modelsToTry = ['gemini-2.0-flash', 'gemini-2.0-flash-lite'];
     let lastError = null;
 
     for (const modelName of modelsToTry) {
@@ -33,7 +33,7 @@ async function generateWithFallback(prompt) {
             console.log(`Attempting generation with model: ${modelName}`);
             const response = await ai.models.generateContent({
                 model: modelName,
-                contents: `Break down the following goal or topic into 3 to 5 concise, actionable task items: "${prompt}".`,
+                contents: `Break down the following goal or topic into 3 to 5 concise, actionable task items for a task manager application: "${prompt}".`,
                 config: {
                     responseMimeType: 'application/json',
                     responseSchema: {
@@ -76,7 +76,7 @@ app.post('/api/ai/generate-tasks', async (req, res) => {
     } catch (error) {
         console.error('AI Generation Error:', error);
         res.status(500).json({ 
-            error: error.message || 'Quota exceeded or no available Gemini model found for this key.' 
+            error: error.message || 'Failed to generate tasks using AI.' 
         });
     }
 });

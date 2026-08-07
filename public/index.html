@@ -3,126 +3,170 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TaskSpace Pro | Workspace</title>
+    <title>TaskSpace Pro — Modern Workspace</title>
+    <!-- Inter Font & Lucide Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
     <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <div class="app-container">
-        <!-- Auth View -->
-        <div id="auth-box" class="auth-card">
-            <div class="auth-header">
-                <i class="fa-solid fa-bolt-lightning logo-icon"></i>
-                <h2 id="auth-title">Welcome Back</h2>
-                <p>Sign in to your intelligent workspace</p>
-            </div>
-            <div class="form-group">
-                <input type="text" id="username" placeholder="Full Name" style="display:none;">
-                <input type="email" id="email" placeholder="Email Address">
-                <input type="password" id="password" placeholder="Password">
-                <button id="auth-btn" class="btn btn-primary btn-block" onclick="handleAuth()">Sign In</button>
-            </div>
-            <p onclick="toggleAuthMode()" id="toggle-link">Don't have an account? Register</p>
-        </div>
 
-        <!-- Dashboard View -->
-        <div id="dashboard" class="dashboard" style="display:none;">
-            <!-- Top Navbar -->
-            <header class="navbar">
-                <div class="brand">
-                    <i class="fa-solid fa-bolt-lightning"></i>
-                    <span>TaskSpace <small class="badge-pro">AI</small></span>
+    <!-- App Container -->
+    <div class="app-layout">
+        
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="brand-icon"><i data-lucide="sparkles"></i></div>
+                <span class="brand-name">TaskSpace <span class="badge">PRO</span></span>
+            </div>
+
+            <nav class="nav-menu">
+                <button class="nav-item active" data-filter="all">
+                    <i data-lucide="layout-grid"></i>
+                    <span>All Tasks</span>
+                    <span class="count-badge" id="count-all">0</span>
+                </button>
+                <button class="nav-item" data-filter="pending">
+                    <i data-lucide="clock"></i>
+                    <span>In Progress</span>
+                    <span class="count-badge" id="count-pending">0</span>
+                </button>
+                <button class="nav-item" data-filter="completed">
+                    <i data-lucide="check-circle-2"></i>
+                    <span>Completed</span>
+                    <span class="count-badge" id="count-completed">0</span>
+                </button>
+            </nav>
+
+            <div class="sidebar-footer">
+                <button id="toggle-ai-btn" class="ai-trigger-btn">
+                    <i data-lucide="bot"></i>
+                    <span>AI Workspace Assistant</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Workspace -->
+        <main class="main-content">
+            <!-- Header Bar -->
+            <header class="top-header">
+                <div class="search-bar">
+                    <i data-lucide="search"></i>
+                    <input type="text" id="search-input" placeholder="Search tasks by title or tags...">
                 </div>
-                <div class="user-profile">
-                    <button class="btn btn-ai-toggle" onclick="toggleAIPanel()">
-                        <i class="fa-solid fa-wand-magic-sparkles"></i> AI Assistant
+
+                <div class="header-actions">
+                    <select id="priority-filter" class="styled-select">
+                        <option value="all">All Priorities</option>
+                        <option value="high">High Priority</option>
+                        <option value="medium">Medium Priority</option>
+                        <option value="low">Low Priority</option>
+                    </select>
+                    <button class="btn btn-primary" id="open-add-modal">
+                        <i data-lucide="plus"></i>
+                        <span>New Task</span>
                     </button>
-                    <span class="user-greeting"><i class="fa-regular fa-circle-user"></i> <span id="user-display"></span></span>
-                    <button class="btn btn-logout" onclick="logout()"><i class="fa-solid fa-arrow-right-from-bracket"></i></button>
                 </div>
             </header>
 
-            <!-- Metrics Overview -->
-            <section class="stats-container">
+            <!-- Dashboard Overview Stats -->
+            <section class="stats-grid">
                 <div class="stat-card">
-                    <div class="stat-icon bg-indigo"><i class="fa-solid fa-list-check"></i></div>
+                    <div class="stat-icon blue"><i data-lucide="list-todo"></i></div>
                     <div class="stat-info">
-                        <p>Total Tasks</p>
-                        <h3 id="stat-total">0</h3>
+                        <span class="stat-label">Total Tasks</span>
+                        <h3 class="stat-value" id="stat-total">0</h3>
                     </div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-icon bg-amber"><i class="fa-solid fa-clock"></i></div>
+                    <div class="stat-icon amber"><i data-lucide="loader-2"></i></div>
                     <div class="stat-info">
-                        <p>In Progress</p>
-                        <h3 id="stat-pending">0</h3>
+                        <span class="stat-label">In Progress</span>
+                        <h3 class="stat-value" id="stat-pending">0</h3>
                     </div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-icon bg-emerald"><i class="fa-solid fa-circle-check"></i></div>
+                    <div class="stat-icon green"><i data-lucide="check-circle"></i></div>
                     <div class="stat-info">
-                        <p>Completed</p>
-                        <h3 id="stat-completed">0</h3>
+                        <span class="stat-label">Completed</span>
+                        <h3 class="stat-value" id="stat-completed">0</h3>
                     </div>
                 </div>
             </section>
 
-            <!-- Controls Toolbar (Single Primary Action) -->
-            <section class="toolbar">
-                <div class="search-box">
-                    <i class="fa-solid fa-magnifying-glass"></i>
-                    <input type="text" id="search-input" placeholder="Search tasks by title or detail..." oninput="filterTasks()">
+            <!-- Task List Container -->
+            <section class="task-section">
+                <div class="section-header">
+                    <h2 id="current-view-title">All Tasks</h2>
                 </div>
-                <div class="filter-group">
-                    <select id="filter-status" onchange="filterTasks()">
-                        <option value="all">All Statuses</option>
-                        <option value="pending">Pending</option>
-                        <option value="completed">Completed</option>
-                    </select>
-                    <button class="btn btn-primary" onclick="openModal()">
-                        <i class="fa-solid fa-plus"></i> New Task
-                    </button>
+                <div id="tasks-container" class="task-grid">
+                    <!-- Tasks render here -->
                 </div>
             </section>
+        </main>
 
-            <!-- Task List Display -->
-            <main>
-                <div id="task-list" class="task-grid"></div>
-            </main>
+        <!-- AI Assistant Side Panel -->
+        <div id="ai-panel" class="ai-drawer">
+            <div class="ai-header">
+                <div class="ai-title">
+                    <i data-lucide="sparkles" class="sparkle-icon"></i>
+                    <h3>AI Task Generator</h3>
+                </div>
+                <button id="close-ai-btn" class="icon-btn"><i data-lucide="x"></i></button>
+            </div>
+            <div class="ai-body">
+                <p class="ai-desc">Describe your goal, project, or schedule, and Gemini AI will automatically break it down into actionable tasks for you.</p>
+                <textarea id="ai-prompt-input" rows="4" placeholder="e.g., Plan a 3-day product launch event with marketing strategy and dev tasks..."></textarea>
+                <button id="generate-tasks-btn" class="btn btn-ai">
+                    <i data-lucide="wand-2"></i>
+                    <span>Generate Tasks</span>
+                </button>
+                <div id="ai-status" class="ai-status-msg"></div>
+            </div>
         </div>
+
     </div>
 
-    <!-- Slide-out AI Assistant Panel -->
-    <aside id="ai-drawer" class="ai-drawer">
-        <div class="ai-drawer-header">
-            <h3><i class="fa-solid fa-wand-magic-sparkles"></i> AI Task Generator</h3>
-            <span class="close-btn" onclick="toggleAIPanel()">&times;</span>
-        </div>
-        <div class="ai-drawer-body">
-            <p class="ai-hint">Describe a goal or project, and the AI assistant will break it down into actionable tasks for you.</p>
-            <textarea id="ai-prompt" placeholder="e.g., Plan a 3-step video production workflow or prepare for database architecture exam..."></textarea>
-            <button class="btn btn-ai-action" onclick="generateAITasks()">
-                <i class="fa-solid fa-brain"></i> Generate Tasks
-            </button>
-            <div id="ai-suggestions" class="ai-suggestions-list"></div>
-        </div>
-    </aside>
-
-    <!-- Create Task Modal -->
-    <div id="task-modal" class="modal">
-        <div class="modal-content">
+    <!-- Add Task Modal -->
+    <div id="task-modal" class="modal-overlay">
+        <div class="modal-card">
             <div class="modal-header">
                 <h3>Create New Task</h3>
-                <span class="close-btn" onclick="closeModal()">&times;</span>
+                <button id="close-modal-btn" class="icon-btn"><i data-lucide="x"></i></button>
             </div>
-            <div class="modal-body">
-                <input type="text" id="task-title" placeholder="Task Title (e.g. Set up IoT Gateway Architecture)">
-                <textarea id="task-desc" placeholder="Details or sub-notes..."></textarea>
-                <button class="btn btn-primary btn-block" onclick="createTask()">Save Task</button>
-            </div>
+            <form id="add-task-form" class="modal-body">
+                <div class="form-group">
+                    <label for="task-title">Task Title</label>
+                    <input type="text" id="task-title" required placeholder="e.g. Design Landing Page Wireframes">
+                </div>
+                <div class="form-group">
+                    <label for="task-desc">Description</label>
+                    <textarea id="task-desc" rows="3" placeholder="Add specific details or context..."></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="task-priority">Priority</label>
+                        <select id="task-priority" class="styled-select">
+                            <option value="medium">Medium</option>
+                            <option value="high">High</option>
+                            <option value="low">Low</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" id="cancel-modal-btn" class="btn btn-secondary">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Create Task</button>
+                </div>
+            </form>
         </div>
     </div>
 
     <script src="app.js"></script>
+    <script>
+        lucide.createIcons();
+    </script>
 </body>
 </html>

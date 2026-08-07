@@ -1,16 +1,16 @@
-require('dotenv').config();
-const express = require('express');
-const cors = require('cors');
-const { GoogleGenAI } = require('@google/genai');
+import 'dotenv/config';
+import express from 'express';
+import cors from 'cors';
+import { GoogleGenAI } from '@google/genai';
+
+// Routes
+import taskRoutes from './routes/taskRoutes.js';
+import authRoutes from './routes/authRoutes.js';
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(express.static('public'));
-
-// Database & Routes
-const taskRoutes = require('./routes/taskRoutes');
-const authRoutes = require('./routes/authRoutes');
 
 app.use('/api/tasks', taskRoutes);
 app.use('/api/auth', authRoutes);

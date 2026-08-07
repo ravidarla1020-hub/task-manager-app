@@ -36,7 +36,7 @@ app.post('/api/ai/generate-tasks', async (req, res) => {
         }
 
         const response = await ai.models.generateContent({
-            model: 'gemini-2.5-flash',
+            model: 'gemini-2.0-flash', // Updated model string
             contents: `Break down the following goal or topic into 3 to 5 concise, actionable task items: "${prompt}".`,
             config: {
                 responseMimeType: 'application/json',
